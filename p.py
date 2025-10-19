@@ -1,22 +1,20 @@
-import pygame, random
+import pygame
 pygame.init()
-screen = pygame.display.set_mode((400, 400))
-snake = [[100, 100]]; food = [300, 300]; dirs = [0, 20]
+screen = pygame.display.set_mode((600, 400))
+p1 = [10, 160]; p2 = [580, 160]; ball = [300, 200]; speed = [4, 4]
 clock = pygame.time.Clock()
 while True:
     screen.fill((0, 0, 0))
     for e in pygame.event.get():
         if e.type == pygame.QUIT: exit()
-        if e.type == pygame.KEYDOWN:
-            if e.key == pygame.K_UP: dirs = [0, -20]
-            if e.key == pygame.K_DOWN: dirs = [0, 20]
-            if e.key == pygame.K_LEFT: dirs = [-20, 0]
-            if e.key == pygame.K_RIGHT: dirs = [20, 0]
-    new_head = [snake[0][0] + dirs[0], snake[0][1] + dirs[1]]
-    snake.insert(0, new_head)
-    if snake[0] == food:
-        food = [random.randrange(0, 400, 20), random.randrange(0, 400, 20)]
-    else: snake.pop()
-    pygame.draw.rect(screen, (255, 0, 0), (*food, 20, 20))
-    for segment in snake: pygame.draw.rect(screen, (0, 255, 0), (*segment, 20, 20))
-    pygame.display.flip(); clock.tick(10)
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w]: p1[1] -= 5
+    if keys[pygame.K_s]: p1[1] += 5
+    p2[1] = ball[1] - 40  # ИИ следует за мячом
+    ball[0] += speed[0]; ball[1] += speed[1]
+    if ball[1] <= 0 or ball[1] >= 380: speed[1] *= -1
+    if (ball[0] <= 30 and p1[1] <= ball[1] <= p1[1] + 80) or (ball[0] >= 570 and p2[1] <= ball[1] <= p2[1] + 80): speed[0] *= -1
+    pygame.draw.rect(screen, (255, 255, 255), (*p1, 20, 80))
+    pygame.draw.rect(screen, (255, 255, 255), (*p2, 20, 80))
+    pygame.draw.circle(screen, (255, 255, 255), ball, 10)
+    pygame.display.flip(); clock.tick(60)
